@@ -325,7 +325,7 @@ window.marioStart = (function () {
 
     function updatePlaying(dt) {
       timerTick += dt;
-      if (timerTick >= 60 / 16.67) { timerTick = 0; gameTimer = Math.max(0, gameTimer - 1); if (gameTimer === 0) killMario(); }
+      if (timerTick >= 60) { timerTick = 0; gameTimer = Math.max(0, gameTimer - 1); if (gameTimer === 0) killMario(); }
 
       updateMario(dt);
       updateEnemies(dt);
