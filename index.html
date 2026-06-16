@@ -101,11 +101,11 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
 /* ── TOUCH CONTROLS ─────────────────────── */
 #touchControls{
   display:none;position:fixed;bottom:0;left:0;right:0;
-  height:160px;background:rgba(0,0,0,0.82);
-  border-top:1px solid rgba(255,255,255,0.08);
+  height:160px;background:transparent;
+  border-top:none;
   z-index:300;align-items:center;justify-content:space-between;
   padding:12px 18px;user-select:none;-webkit-user-select:none;
-  touch-action:none;backdrop-filter:blur(8px);
+  touch-action:none;
 }
 .dpad{
   display:grid;
@@ -114,33 +114,34 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
   gap:4px;
 }
 .db{
-  background:rgba(255,255,255,0.13);border:2px solid rgba(255,255,255,0.22);
-  border-radius:10px;color:#fff;font-size:18px;
+  background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);
+  border-radius:10px;color:rgba(255,255,255,0.5);font-size:18px;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
   transition:background 0.08s,transform 0.08s;
+  backdrop-filter:blur(2px);
 }
-.db:active,.db.pressed{background:rgba(255,255,255,0.32);transform:scale(0.92);}
+.db:active,.db.pressed{background:rgba(255,255,255,0.25);color:#fff;transform:scale(0.92);}
 .db-up   {grid-column:2;grid-row:1;}
 .db-left {grid-column:1;grid-row:2;}
 .db-right{grid-column:3;grid-row:2;}
 .db-down {grid-column:2;grid-row:3;}
 .ctrl-center{display:flex;flex-direction:column;align-items:center;gap:8px;}
 #btnMobileMenu{
-  background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
-  border-radius:50%;color:#fff;width:48px;height:48px;font-size:22px;
+  background:rgba(0,0,0,0.2);border:1.5px solid rgba(255,255,255,0.12);
+  border-radius:50%;color:rgba(255,255,255,0.45);width:44px;height:44px;font-size:20px;
   cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
 }
 .action-btns{display:flex;flex-direction:column;gap:10px;align-items:center;}
 .ab{
   width:68px;height:68px;border-radius:50%;border:none;
-  color:#fff;font-weight:900;font-size:14px;line-height:1.15;
+  color:rgba(255,255,255,0.6);font-weight:900;font-size:14px;line-height:1.15;
   cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
-  transition:transform 0.08s;
+  transition:transform 0.08s,opacity 0.08s;
 }
-.ab:active,.ab.pressed{transform:scale(0.9);}
-.ab-a{background:radial-gradient(circle at 38% 32%,#ff7979,#c0392b);box-shadow:0 4px 18px rgba(192,57,43,0.55);}
-.ab-b{background:radial-gradient(circle at 38% 32%,#f6d365,#e67e22);box-shadow:0 4px 18px rgba(230,126,34,0.45);color:#000;}
+.ab:active,.ab.pressed{transform:scale(0.9);color:#fff;}
+.ab-a{background:rgba(180,40,40,0.35);box-shadow:0 0 12px rgba(192,57,43,0.25);}
+.ab-b{background:rgba(200,140,20,0.3);box-shadow:0 0 12px rgba(230,126,34,0.2);}
 .pong-btns{display:flex;flex-direction:column;gap:8px;}
 .pong-btns .db{width:60px;height:60px;font-size:24px;}
 </style>
