@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>🎮 Arcade Collection</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -97,6 +97,52 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
 
 /* ── SCROLLBAR HIDE ────────────────────── */
 ::-webkit-scrollbar{display:none;}
+
+/* ── TOUCH CONTROLS ─────────────────────── */
+#touchControls{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  height:160px;background:rgba(0,0,0,0.82);
+  border-top:1px solid rgba(255,255,255,0.08);
+  z-index:300;align-items:center;justify-content:space-between;
+  padding:12px 18px;user-select:none;-webkit-user-select:none;
+  touch-action:none;backdrop-filter:blur(8px);
+}
+.dpad{
+  display:grid;
+  grid-template-rows:50px 50px 50px;
+  grid-template-columns:50px 50px 50px;
+  gap:4px;
+}
+.db{
+  background:rgba(255,255,255,0.13);border:2px solid rgba(255,255,255,0.22);
+  border-radius:10px;color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
+  transition:background 0.08s,transform 0.08s;
+}
+.db:active,.db.pressed{background:rgba(255,255,255,0.32);transform:scale(0.92);}
+.db-up   {grid-column:2;grid-row:1;}
+.db-left {grid-column:1;grid-row:2;}
+.db-right{grid-column:3;grid-row:2;}
+.db-down {grid-column:2;grid-row:3;}
+.ctrl-center{display:flex;flex-direction:column;align-items:center;gap:8px;}
+#btnMobileMenu{
+  background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
+  border-radius:50%;color:#fff;width:48px;height:48px;font-size:22px;
+  cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
+}
+.action-btns{display:flex;flex-direction:column;gap:10px;align-items:center;}
+.ab{
+  width:68px;height:68px;border-radius:50%;border:none;
+  color:#fff;font-weight:900;font-size:14px;line-height:1.15;
+  cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;
+  transition:transform 0.08s;
+}
+.ab:active,.ab.pressed{transform:scale(0.9);}
+.ab-a{background:radial-gradient(circle at 38% 32%,#ff7979,#c0392b);box-shadow:0 4px 18px rgba(192,57,43,0.55);}
+.ab-b{background:radial-gradient(circle at 38% 32%,#f6d365,#e67e22);box-shadow:0 4px 18px rgba(230,126,34,0.45);color:#000;}
+.pong-btns{display:flex;flex-direction:column;gap:8px;}
+.pong-btns .db{width:60px;height:60px;font-size:24px;}
 </style>
 </head>
 <body>
@@ -157,6 +203,28 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
   <div style="display:flex;gap:12px;margin-top:20px;">
     <button class="gbtn" onclick="restart()" style="background:linear-gradient(135deg,#1a7a3c,#27ae60);justify-content:center;">🔄 Rigioca</button>
     <button class="gbtn btn-menu-go" onclick="backToMenuFromGameover()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);justify-content:center;">🏠 Menu</button>
+  </div>
+</div>
+
+<div id="touchControls">
+  <div class="ctrl-left">
+    <div class="dpad">
+      <button class="db db-up"    data-key="ArrowUp">▲</button>
+      <button class="db db-left"  data-key="ArrowLeft">◀</button>
+      <button class="db db-right" data-key="ArrowRight">▶</button>
+      <button class="db db-down"  data-key="ArrowDown">▼</button>
+    </div>
+  </div>
+  <div class="ctrl-center">
+    <button id="btnMobileMenu">🏠</button>
+    <div class="pong-btns" id="pongBtns" style="display:none;">
+      <button class="db" data-key="w" style="width:60px;height:60px;font-size:22px;">▲</button>
+      <button class="db" data-key="s" style="width:60px;height:60px;font-size:22px;">▼</button>
+    </div>
+  </div>
+  <div class="ctrl-right action-btns">
+    <button class="ab ab-b" data-key="Shift">B<br>CORRI</button>
+    <button class="ab ab-a" data-key=" ">A<br>SALTA</button>
   </div>
 </div>
 
@@ -246,12 +314,13 @@ const BB_SHAPES=[
 // ── MENU / NAV ────────────────────────────────────────────────────────────────
 let keys={};
 function showPongMenu(){document.getElementById("menu").style.display="none";document.getElementById("pongMenu").style.display="flex";}
-function backToMenu(){document.getElementById("pongMenu").style.display="none";document.getElementById("menu").style.display="flex";}
-function backToMenuFromGameover(){document.getElementById("gameover").style.display="none";document.getElementById("menu").style.display="flex";}
+function backToMenu(){document.getElementById("pongMenu").style.display="none";document.getElementById("menu").style.display="flex";hideTouchControls&&hideTouchControls();}
+function backToMenuFromGameover(){document.getElementById("gameover").style.display="none";document.getElementById("menu").style.display="flex";hideTouchControls&&hideTouchControls();}
 function backToMenuFromMario(){
   if(marioStopFn){marioStopFn();marioStopFn=null;}
   canvas.style.display="none";
   document.getElementById("menu").style.display="flex";
+  hideTouchControls&&hideTouchControls();
 }
 function startPong(t){pongMode_type=t;document.getElementById("pongMenu").style.display="none";mode="pong";countdown();}
 function start(m){
@@ -263,6 +332,7 @@ function start(m){
     canvas.style.display="block";
     mode="mario";
     marioStopFn = window.marioStart(canvas, ctx, backToMenuFromMario);
+    showTouchControls&&showTouchControls();
     return;
   }
   mode=m; countdown();
@@ -289,6 +359,7 @@ function init(){
   if(mode==="dino"){dino={x:100,y:groundY-50,w:40,h:50,vy:0};jumping=false;obstacles=[];cloudList=[];dinoSpeed=5;dinoScore=0;dinoTick=0;dinoTickSpeed=newObstacleInterval();for(let i=0;i<5;i++)cloudList.push({x:Math.random()*W,y:60+Math.random()*120,w:60+Math.random()*50});}
   if(mode==="bb"){bbBoard=Array.from({length:BB_ROWS},()=>Array(BB_COLS).fill(null));bbPieces=[bbRandPiece(),bbRandPiece(),bbRandPiece()];bbSelected=null;bbScore=0;bbScorePopup=null;}
   running=true;timerInt=setInterval(()=>{if(running)timer++;},1000);lastTime=performance.now();rafId=requestAnimationFrame(gameLoop);
+  showTouchControls&&showTouchControls();
 }
 function gameLoop(ts){
   if(!running)return;
@@ -557,7 +628,7 @@ function bbHandleClick(mx,my){for(let i=0;i<3;i++){const b=bbTrayBox(i);if(mx>=b
 function drawBB(){ctx.fillStyle="#0d0d1a";ctx.fillRect(0,0,W,H);ctx.font="bold 18px Arial";ctx.fillStyle="#a78bfa";ctx.fillText("BLOCK BLAST",20,22);ctx.font="bold 32px Arial";ctx.fillStyle="#ffe66d";ctx.textAlign="center";ctx.fillText(bbScore,W/2,30);ctx.textAlign="left";for(let r=0;r<BB_ROWS;r++)for(let c=0;c<BB_COLS;c++){const x=BB_OX+c*BB_CELL,y=BB_OY+r*BB_CELL;ctx.fillStyle="#1e1e2e";ctx.fillRect(x+1,y+1,BB_CELL-2,BB_CELL-2);if(bbBoard[r][c]){ctx.fillStyle=bbBoard[r][c];ctx.fillRect(x+2,y+2,BB_CELL-4,BB_CELL-4);ctx.fillStyle="rgba(255,255,255,0.18)";ctx.fillRect(x+2,y+2,BB_CELL-4,7);ctx.fillStyle="rgba(0,0,0,0.15)";ctx.fillRect(x+2,y+BB_CELL-8,BB_CELL-4,6);}}ctx.strokeStyle="#2a2a3e";ctx.lineWidth=1;for(let r=0;r<=BB_ROWS;r++){ctx.beginPath();ctx.moveTo(BB_OX,BB_OY+r*BB_CELL);ctx.lineTo(BB_OX+BB_COLS*BB_CELL,BB_OY+r*BB_CELL);ctx.stroke();}for(let c=0;c<=BB_COLS;c++){ctx.beginPath();ctx.moveTo(BB_OX+c*BB_CELL,BB_OY);ctx.lineTo(BB_OX+c*BB_CELL,BB_OY+BB_ROWS*BB_CELL);ctx.stroke();}if(bbSelected!==null){const p=bbPieces[bbSelected],hc=Math.floor((bbMouseX-BB_OX)/BB_CELL),hr=Math.floor((bbMouseY-BB_OY)/BB_CELL);if(hr>=0&&hr<BB_ROWS&&hc>=0&&hc<BB_COLS){const ok=bbCanPlace(p,hr,hc);p.cells.forEach(([dr,dc])=>{const rr=hr+dr,cc2=hc+dc;if(rr>=0&&rr<BB_ROWS&&cc2>=0&&cc2<BB_COLS){const x=BB_OX+cc2*BB_CELL,y=BB_OY+rr*BB_CELL;ctx.fillStyle=ok?p.color+"99":"rgba(255,60,60,0.45)";ctx.fillRect(x+2,y+2,BB_CELL-4,BB_CELL-4);if(ok){ctx.fillStyle="rgba(255,255,255,0.15)";ctx.fillRect(x+2,y+2,BB_CELL-4,7);}}});}}ctx.fillStyle="#13132a";ctx.fillRect(0,442,W,H-442);ctx.strokeStyle="#2a2a4a";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,442);ctx.lineTo(W,442);ctx.stroke();const TC=22;for(let i=0;i<3;i++){const b=bbTrayBox(i),sel=bbSelected===i;ctx.strokeStyle=sel?"#ffe66d":"#3a3a5a";ctx.lineWidth=sel?3:1;ctx.strokeRect(b.x,b.y,b.w,b.h);if(sel){ctx.fillStyle="rgba(255,230,109,0.05)";ctx.fillRect(b.x,b.y,b.w,b.h);}if(!bbPieces[i]){ctx.fillStyle="rgba(255,255,255,0.15)";ctx.font="28px Arial";ctx.textAlign="center";ctx.fillText("✓",b.x+b.w/2,b.y+b.h/2+10);ctx.textAlign="left";continue;}const p=bbPieces[i],maxR=Math.max(...p.cells.map(([r])=>r)),maxC=Math.max(...p.cells.map(([,c])=>c)),pw=(maxC+1)*TC,ph=(maxR+1)*TC,offX=b.x+b.w/2-pw/2,offY=b.y+b.h/2-ph/2;p.cells.forEach(([dr,dc])=>{const x=offX+dc*TC,y=offY+dr*TC;ctx.fillStyle=p.color;ctx.fillRect(x+1,y+1,TC-2,TC-2);ctx.fillStyle="rgba(255,255,255,0.2)";ctx.fillRect(x+1,y+1,TC-2,5);ctx.fillStyle="rgba(0,0,0,0.1)";ctx.fillRect(x+1,y+TC-5,TC-2,4);});}if(bbScorePopup){bbScorePopup.life--;const a=bbScorePopup.life/90;ctx.save();ctx.globalAlpha=a;ctx.font="bold 36px Arial";ctx.fillStyle="#ffe66d";ctx.textAlign="center";ctx.fillText(bbScorePopup.text,bbScorePopup.x,bbScorePopup.y-(90-bbScorePopup.life)*0.5);ctx.textAlign="left";ctx.restore();if(bbScorePopup.life<=0)bbScorePopup=null;}ctx.font="12px Arial";ctx.fillStyle="rgba(255,255,255,0.3)";ctx.textAlign="center";ctx.fillText("Clicca un pezzo → poi clicca la griglia per posizionarlo",W/2,593);ctx.textAlign="left";}
 
 // game over
-function gameOver(){running=false;cancelAnimationFrame(rafId);clearInterval(timerInt);clearInterval(appleSpawner);document.getElementById("t").textContent=timer;document.getElementById("deathReason").textContent=deathReason;canvas.style.display="none";document.getElementById("gameover").style.display="flex";}
+function gameOver(){running=false;cancelAnimationFrame(rafId);clearInterval(timerInt);clearInterval(appleSpawner);document.getElementById("t").textContent=timer;document.getElementById("deathReason").textContent=deathReason;canvas.style.display="none";document.getElementById("gameover").style.display="flex";hideTouchControls&&hideTouchControls();}
 function restart(){document.getElementById("gameover").style.display="none";countdown();}
 
 // input
@@ -568,8 +639,88 @@ document.addEventListener("keydown",e=>{
   if(mode==="dino"&&(e.key==="ArrowUp"||e.key===" ")&&!jumping){dino.vy=-18;jumping=true;}
 });
 document.addEventListener("keyup",e=>{keys[e.key]=false;});
-canvas.addEventListener("mousemove",e=>{if(mode!=="bb")return;const r=canvas.getBoundingClientRect();bbMouseX=e.clientX-r.left;bbMouseY=e.clientY-r.top;});
-canvas.addEventListener("click",e=>{if(mode!=="bb")return;const r=canvas.getBoundingClientRect();bbHandleClick(e.clientX-r.left,e.clientY-r.top);});
+canvas.addEventListener("mousemove",e=>{if(mode!=="bb")return;const r=canvas.getBoundingClientRect();const sx=800/r.width,sy=600/r.height;bbMouseX=(e.clientX-r.left)*sx;bbMouseY=(e.clientY-r.top)*sy;});
+canvas.addEventListener("click",e=>{if(mode!=="bb")return;const r=canvas.getBoundingClientRect();const sx=800/r.width,sy=600/r.height;bbHandleClick((e.clientX-r.left)*sx,(e.clientY-r.top)*sy);});
+
+// ── MOBILE ──────────────────────────────────────────────────────────────────────
+const isMobile='ontouchstart' in window||navigator.maxTouchPoints>0;
+
+function simKey(key,down){
+  document.dispatchEvent(new KeyboardEvent(down?'keydown':'keyup',{key,bubbles:true,cancelable:true}));
+}
+
+// Mappa tasti in base al gioco corrente
+function resolveKey(rawKey){
+  if(mode==='pong'){
+    if(rawKey==='ArrowUp')return'w';
+    if(rawKey==='ArrowDown')return's';
+  }
+  return rawKey;
+}
+
+// Bind pulsanti touch
+document.querySelectorAll('[data-key]').forEach(btn=>{
+  const getKey=()=>resolveKey(btn.dataset.key);
+  btn.addEventListener('touchstart',e=>{e.preventDefault();btn.classList.add('pressed');simKey(getKey(),true);},{passive:false});
+  btn.addEventListener('touchend',  e=>{e.preventDefault();btn.classList.remove('pressed');simKey(getKey(),false);},{passive:false});
+  btn.addEventListener('touchcancel',e=>{e.preventDefault();btn.classList.remove('pressed');simKey(getKey(),false);},{passive:false});
+});
+
+// Pulsante home mobile
+document.getElementById('btnMobileMenu').addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(mode==='mario'){marioStopFn&&marioStopFn();marioStopFn=null;}
+  else{running=false;cancelAnimationFrame(rafId);clearInterval(timerInt);clearInterval(appleSpawner);}
+  canvas.style.display='none';
+  document.getElementById('gameover').style.display='none';
+  hideTouchControls();
+  document.getElementById('menu').style.display='flex';
+},{passive:false});
+
+// BB: touch su canvas
+canvas.addEventListener('touchend',e=>{
+  if(mode!=='bb')return;e.preventDefault();
+  const r=canvas.getBoundingClientRect(),t2=e.changedTouches[0];
+  bbHandleClick((t2.clientX-r.left)*(800/r.width),(t2.clientY-r.top)*(600/r.height));
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+  if(mode!=='bb')return;e.preventDefault();
+  const r=canvas.getBoundingClientRect(),t2=e.touches[0];
+  bbMouseX=(t2.clientX-r.left)*(800/r.width);bbMouseY=(t2.clientY-r.top)*(600/r.height);
+},{passive:false});
+
+function showTouchControls(){
+  if(!isMobile)return;
+  const tc=document.getElementById('touchControls');
+  const dpad=document.querySelector('.ctrl-left');
+  const abts=document.querySelector('.ctrl-right');
+  const pong=document.getElementById('pongBtns');
+  tc.style.display='flex';
+  dpad.style.display='flex'; abts.style.display='flex'; pong.style.display='none';
+  if(mode==='snake'||mode==='dodge'){abts.style.display='none';}
+  else if(mode==='dino'){dpad.style.display='none';abts.style.display='flex';}
+  else if(mode==='bb'){tc.style.display='none';}
+  else if(mode==='pong'){abts.style.display='none';pong.style.display='flex';}
+  scaleGame();
+}
+function hideTouchControls(){
+  document.getElementById('touchControls').style.display='none';
+  if(isMobile){canvas.style.width='';canvas.style.height='';canvas.style.position='';canvas.style.left='';canvas.style.top='';canvas.style.margin='auto';}
+}
+
+function scaleGame(){
+  if(!isMobile||canvas.style.display==='none')return;
+  const ctrlH=document.getElementById('touchControls').style.display!=='none'?164:0;
+  const aw=window.innerWidth,ah=window.innerHeight-ctrlH;
+  const sc=Math.min(aw/800,ah/600);
+  const sw=Math.round(800*sc),sh=Math.round(600*sc);
+  canvas.style.width=sw+'px';canvas.style.height=sh+'px';
+  canvas.style.position='fixed';canvas.style.margin='0';
+  canvas.style.left=Math.round((aw-sw)/2)+'px';
+  canvas.style.top=Math.round((ah-sh)/2)+'px';
+}
+window.addEventListener('resize',scaleGame);
+window.addEventListener('orientationchange',()=>setTimeout(scaleGame,300));
 </script>
 </body>
 </html>
