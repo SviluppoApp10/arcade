@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>🎮 Arcade Collection</title>
+<title>🎮 Pixel Arcade</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#0a0a1a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;overflow:hidden;height:100vh;width:100vw;}
@@ -151,33 +151,33 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
 <canvas id="bgCanvas"></canvas>
 
 <div id="menu">
-  <div class="menu-title">🎮 Arcade Collection</div>
+  <div class="menu-title">🎮 Pixel Arcade</div>
   <div class="menu-sub">Scegli il tuo gioco</div>
 
   <div class="btn-grid">
     <button class="gbtn btn-snake" onclick="start('snake')">
       <span class="ico">🐍</span>
-      <span class="label"><span>Snake</span><span>Classico serpente</span></span>
+      <span class="label"><span>Slitherix</span><span>Diventa il più lungo</span></span>
     </button>
     <button class="gbtn btn-dodge" onclick="start('dodge')">
-      <span class="ico">💥</span>
-      <span class="label"><span>Dodge</span><span>Schiva i proiettili</span></span>
+      <span class="ico">🚀</span>
+      <span class="label"><span>Evader</span><span>Schiva i proiettili</span></span>
     </button>
     <button class="gbtn btn-pong" onclick="showPongMenu()">
-      <span class="ico">🏓</span>
-      <span class="label"><span>Pong</span><span>1 o 2 giocatori</span></span>
+      <span class="ico">⚡</span>
+      <span class="label"><span>Volt</span><span>1 o 2 giocatori</span></span>
     </button>
     <button class="gbtn btn-dino" onclick="start('dino')">
-      <span class="ico">🦕</span>
-      <span class="label"><span>Dino Run</span><span>Salta gli ostacoli</span></span>
+      <span class="ico">🦖</span>
+      <span class="label"><span>Rex Sprint</span><span>Salta gli ostacoli</span></span>
     </button>
     <button class="gbtn btn-bb" onclick="start('bb')">
-      <span class="ico">🧩</span>
-      <span class="label"><span>Block Blast</span><span>Completa le righe</span></span>
+      <span class="ico">💣</span>
+      <span class="label"><span>GridBomb</span><span>Completa le righe</span></span>
     </button>
     <button class="gbtn btn-mario" onclick="start('mario')">
-      <span class="ico">🍄</span>
-      <span class="label"><span>Super Mario</span><span>World 1-1</span></span>
+      <span class="ico">🎩</span>
+      <span class="label"><span>Cappo</span><span>Zona 1-1</span></span>
     </button>
   </div>
 
@@ -187,7 +187,7 @@ canvas{background:#1b1b2e;display:none;margin:auto;cursor:default;position:relat
 </div>
 
 <div id="pongMenu">
-  <h1>🏓 Pong</h1>
+  <h1>⚡ Volt</h1>
   <button class="gbtn btn-pong" onclick="startPong('cpu')" style="width:280px;justify-content:center;margin:8px;">🤖&nbsp; VS Computer</button>
   <button class="gbtn btn-pong" onclick="startPong('friend')" style="width:280px;justify-content:center;margin:8px;">👥&nbsp; VS Amico</button>
   <button class="gbtn" onclick="backToMenu()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);width:280px;justify-content:center;margin:18px 8px 8px;">← Indietro</button>

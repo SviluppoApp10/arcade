@@ -137,7 +137,7 @@ window.marioStart = (function () {
     // ── STATO ──────────────────────────────────────────────────────────────────
     let state; // 'playing' | 'dying' | 'win' | 'over' | 'winWalk' | 'paused'
     let mario, enemies, particles, powerups, floatCoins;
-    let camX, score, lives, gameTimer, timerTick;
+    let camX, camY, score, lives, gameTimer, timerTick;
     let qAnims; // { 'r,c': { dy, goingUp } }
     let flagGrabbed, flagY;
     let winWalkTimer;
@@ -224,7 +224,7 @@ window.marioStart = (function () {
       }));
       particles = []; powerups = []; floatCoins = [];
       qAnims = {};
-      camX = 0;
+      camX = 0; camY = 0;
       gameTimer = 400; timerTick = 0;
       flagGrabbed = false; flagY = T;
       winWalkTimer = 0;
@@ -233,7 +233,8 @@ window.marioStart = (function () {
 
     // ── TILE HELPERS ───────────────────────────────────────────────────────────
     function tileAt(r, c) {
-      if (r < 0 || r >= ROWS) return G;
+      if (r < 0) return E;      // sopra il livello = vuoto, non soffitto solido
+      if (r >= ROWS) return G;  // sotto il livello = solido
       if (c < 0) return G;
       if (c >= COLS) return E;
       return lev[r][c];
@@ -334,9 +335,13 @@ window.marioStart = (function () {
       updateFloatCoins(dt);
       updateQAnims(dt);
 
-      // Camera
+      // Camera orizzontale
       const target = mario.x - W / 3;
       camX = Math.max(0, Math.min(target, COLS * T - W));
+      // Camera verticale: segue Mario quando salta in alto
+      const targetCamY = mario.y - H * 0.55;
+      camY += (targetCamY - camY) * 0.12 * dt;
+      camY = Math.min(camY, ROWS * T - H); // non scendere sotto il fondo
 
       // Flagpole
       const fpx = FLAGPOLE_COL * T + T / 2;
@@ -569,6 +574,11 @@ window.marioStart = (function () {
       ctx.fillRect(0, 0, W, H);
 
       drawClouds();
+
+      // Tutto il mondo si sposta con camY
+      ctx.save();
+      ctx.translate(0, -camY);
+
       drawHills();
       drawTiles();
       drawFlagpole();
@@ -586,7 +596,10 @@ window.marioStart = (function () {
         ctx.fillRect(c.x - camX - 5, c.y + 3, 8, 14);
       }
       drawMario();
-      drawHUD();
+
+      ctx.restore();
+
+      drawHUD(); // HUD fisso, non scorre
 
       if (state === 'over') drawOverlay('GAME OVER', 'Premi INVIO per riprovare');
       if (state === 'win') drawOverlay('LIVELLO COMPLETATO!', 'Premi INVIO per continuare');
@@ -598,9 +611,10 @@ window.marioStart = (function () {
         const sx = cl.cx - camX * 0.35;
         if (sx < -200 || sx > W + 200) continue;
         ctx.beginPath();
-        ctx.arc(sx, cl.cy, cl.r, 0, Math.PI * 2);
-        ctx.arc(sx + cl.r * 0.85, cl.cy - cl.r * 0.3, cl.r * 0.75, 0, Math.PI * 2);
-        ctx.arc(sx + cl.r * 1.65, cl.cy, cl.r * 0.65, 0, Math.PI * 2);
+        const cy = cl.cy - camY * 0.15;
+        ctx.arc(sx, cy, cl.r, 0, Math.PI * 2);
+        ctx.arc(sx + cl.r * 0.85, cy - cl.r * 0.3, cl.r * 0.75, 0, Math.PI * 2);
+        ctx.arc(sx + cl.r * 1.65, cy, cl.r * 0.65, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -868,14 +882,14 @@ window.marioStart = (function () {
       ctx.fillRect(0, 0, W, 64);
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 16px "Courier New",monospace';
-      ctx.textAlign = 'left'; ctx.fillText('MARIO', 18, 22);
+      ctx.textAlign = 'left'; ctx.fillText('CAPPO', 18, 22);
       ctx.font = 'bold 22px "Courier New",monospace';
       ctx.fillText(String(score).padStart(6, '0'), 18, 48);
       ctx.textAlign = 'center';
-      ctx.font = 'bold 16px "Courier New",monospace'; ctx.fillText('MONDO', W / 2, 22);
+      ctx.font = 'bold 16px "Courier New",monospace'; ctx.fillText('ZONA', W / 2, 22);
       ctx.font = 'bold 22px "Courier New",monospace'; ctx.fillText('1-1', W / 2, 48);
       ctx.textAlign = 'right';
-      ctx.font = 'bold 16px "Courier New",monospace'; ctx.fillText('TEMPO', W - 18, 22);
+      ctx.font = 'bold 16px "Courier New",monospace'; ctx.fillText('CLOCK', W - 18, 22);
       ctx.font = 'bold 22px "Courier New",monospace'; ctx.fillText(String(Math.max(0, gameTimer)), W - 18, 48);
       // Vite
       ctx.fillStyle = RED; ctx.fillRect(18, 52, 14, 8); ctx.fillStyle = SKIN; ctx.fillRect(18, 58, 14, 6);
