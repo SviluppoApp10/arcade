@@ -882,7 +882,7 @@ window.marioStart = (function () {
       ctx.fillRect(0, 0, W, 64);
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 16px "Courier New",monospace';
-      ctx.textAlign = 'left'; ctx.fillText('CAPPO', 18, 22);
+      ctx.textAlign = 'left'; ctx.fillText('GAUDIOSO', 18, 22);
       ctx.font = 'bold 22px "Courier New",monospace';
       ctx.fillText(String(score).padStart(6, '0'), 18, 48);
       ctx.textAlign = 'center';
