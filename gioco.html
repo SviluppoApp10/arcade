@@ -711,8 +711,7 @@ function hideTouchControls(){
 
 function scaleGame(){
   if(!isMobile||canvas.style.display==='none')return;
-  const ctrlH=document.getElementById('touchControls').style.display!=='none'?164:0;
-  const aw=window.innerWidth,ah=window.innerHeight-ctrlH;
+  const aw=window.innerWidth,ah=window.innerHeight;
   const sc=Math.min(aw/800,ah/600);
   const sw=Math.round(800*sc),sh=Math.round(600*sc);
   canvas.style.width=sw+'px';canvas.style.height=sh+'px';
