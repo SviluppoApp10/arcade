@@ -279,7 +279,7 @@ let timer=0, deathReason="", running=false, lastTime=0;
 let marioStopFn = null;
 
 // snake
-let snake, dx=0, dy=0, nextDir={x:20,y:0}, apples=[], poisons=[], appleCount=0, snakeTick=0;
+let snake, dx=0, dy=0, nextDir={x:32,y:0}, apples=[], poisons=[], appleCount=0, snakeTick=0;
 const snakeSpeed=120;
 // dodge
 let dodgePlayer, bullets=[], cannons=[], dodgeTick=0, dodgeDx=0, dodgeDy=0;
@@ -354,7 +354,7 @@ function init(){
   running=false;cancelAnimationFrame(rafId);clearInterval(timerInt);clearInterval(appleSpawner);
   canvas.style.display="block";timer=0;appleCount=0;apples=[];poisons=[];bullets=[];cannons=[];
   deathReason="";snakeTick=0;dodgeTick=0;keys={};
-  if(mode==="snake"){snake=[{x:400,y:300}];dx=0;dy=0;nextDir={x:20,y:0};for(let i=0;i<20;i++)apples.push(spawnApple("normal"));for(let i=0;i<5;i++)poisons.push(spawnApple("poison"));appleSpawner=setInterval(()=>{if(mode==="snake"&&apples.length<30)apples.push(spawnApple("normal"));if(mode==="snake"&&poisons.length<8)poisons.push(spawnApple("poison"));},2000);}
+  if(mode==="snake"){snake=[{x:416,y:288}];dx=0;dy=0;nextDir={x:32,y:0};for(let i=0;i<20;i++)apples.push(spawnApple("normal"));for(let i=0;i<5;i++)poisons.push(spawnApple("poison"));appleSpawner=setInterval(()=>{if(mode==="snake"&&apples.length<30)apples.push(spawnApple("normal"));if(mode==="snake"&&poisons.length<8)poisons.push(spawnApple("poison"));},2000);}
   if(mode==="dodge"){dodgePlayer={x:400,y:300};dodgeDx=0;dodgeDy=0;cannons=createCannons();}
   if(mode==="pong"){paddleLeft={x:20,y:250,w:15,h:100};paddleRight={x:765,y:250,w:15,h:100};ball={x:400,y:300,vx:10,vy:5,r:10};scoreLeft=0;scoreRight=0;}
   if(mode==="dino"){dino={x:100,y:groundY-50,w:40,h:50,vy:0};jumping=false;obstacles=[];cloudList=[];dinoSpeed=5;dinoScore=0;dinoTick=0;dinoTickSpeed=newObstacleInterval();for(let i=0;i<5;i++)cloudList.push({x:Math.random()*W,y:60+Math.random()*120,w:60+Math.random()*50});}
@@ -377,61 +377,61 @@ function gameLoop(ts){
 
 // helpers
 let dodgeStars=[];
-function spawnApple(t){return{x:Math.floor(Math.random()*40)*20,y:Math.floor(Math.random()*30)*20,type:t,born:Date.now()};}
+function spawnApple(t){return{x:Math.floor(Math.random()*25)*32,y:Math.floor(Math.random()*18)*32,type:t,born:Date.now()};}
 function createCannons(){
   dodgeStars=Array.from({length:120},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+0.3,b:Math.random()}));
   return Array.from({length:6},()=>({x:Math.random()*760+10,y:Math.random()*560+10,vx:(Math.random()*2-1)*3.5,vy:(Math.random()*2-1)*3.5,cd:0}));
 }
 
 // snake
-function snakeMode(){dx=nextDir.x;dy=nextDir.y;let h={x:snake[0].x+dx,y:snake[0].y+dy};if(h.x<0)h.x=780;if(h.x>780)h.x=0;if(h.y<0)h.y=580;if(h.y>580)h.y=0;snake.unshift(h);let ate=false;for(let i=0;i<apples.length;i++){if(h.x===apples[i].x&&h.y===apples[i].y){appleCount++;apples.splice(i,1);while(apples.length<20)apples.push(spawnApple("normal"));ate=true;break;}}for(let i=0;i<poisons.length;i++){if(h.x===poisons[i].x&&h.y===poisons[i].y){deathReason="☠️ Mela avvelenata!";gameOver();return;}if(Date.now()-poisons[i].born>5000)poisons[i]=spawnApple("poison");}for(let i=1;i<snake.length;i++){if(h.x===snake[i].x&&h.y===snake[i].y){deathReason="🐍 Collisione!";gameOver();return;}}if(!ate)snake.pop();document.getElementById("appleUI").textContent=appleCount;}
+function snakeMode(){dx=nextDir.x;dy=nextDir.y;let h={x:snake[0].x+dx,y:snake[0].y+dy};if(h.x<0)h.x=768;if(h.x>768)h.x=0;if(h.y<0)h.y=544;if(h.y>544)h.y=0;snake.unshift(h);let ate=false;for(let i=0;i<apples.length;i++){if(h.x===apples[i].x&&h.y===apples[i].y){appleCount++;apples.splice(i,1);while(apples.length<20)apples.push(spawnApple("normal"));ate=true;break;}}for(let i=0;i<poisons.length;i++){if(h.x===poisons[i].x&&h.y===poisons[i].y){deathReason="☠️ Mela avvelenata!";gameOver();return;}if(Date.now()-poisons[i].born>5000)poisons[i]=spawnApple("poison");}for(let i=1;i<snake.length;i++){if(h.x===snake[i].x&&h.y===snake[i].y){deathReason="🐍 Collisione!";gameOver();return;}}if(!ate)snake.pop();document.getElementById("appleUI").textContent=appleCount;}
 function drawSnake(){
   // Sfondo con griglia
   ctx.fillStyle="#071a0f";ctx.fillRect(0,0,W,H);
   ctx.strokeStyle="rgba(0,255,136,0.06)";ctx.lineWidth=1;
-  for(let x=0;x<W;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  for(let x=0;x<W;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
   // Corpo serpente con gradiente colore
   for(let i=snake.length-1;i>=0;i--){
     const s=snake[i],t2=i/Math.max(snake.length,1);
     const g=Math.floor(255*(1-t2*0.55)),b2=Math.floor(60*(1-t2));
     ctx.fillStyle=`rgb(0,${g},${b2})`;
-    ctx.beginPath();ctx.roundRect(s.x+1,s.y+1,17,17,i===0?6:4);ctx.fill();
-    if(i>0){ctx.fillStyle=`rgba(0,${g},${b2},0.5)`;ctx.fillRect(s.x+4,s.y+4,10,10);}
+    ctx.beginPath();ctx.roundRect(s.x+1,s.y+1,30,30,i===0?8:5);ctx.fill();
+    if(i>0){ctx.fillStyle=`rgba(0,${g},${b2},0.5)`;ctx.fillRect(s.x+7,s.y+7,18,18);}
   }
   // Testa con occhi
   if(snake.length>0){
     const h2=snake[0];
     ctx.fillStyle="#00ff88";ctx.shadowBlur=12;ctx.shadowColor="#00ff88";
-    ctx.beginPath();ctx.roundRect(h2.x+1,h2.y+1,17,17,6);ctx.fill();ctx.shadowBlur=0;
+    ctx.beginPath();ctx.roundRect(h2.x+1,h2.y+1,30,30,8);ctx.fill();ctx.shadowBlur=0;
     let e1,e2;
-    if(nextDir.x>0){e1={x:12,y:3};e2={x:12,y:11};}
-    else if(nextDir.x<0){e1={x:2,y:3};e2={x:2,y:11};}
-    else if(nextDir.y<0){e1={x:3,y:2};e2={x:11,y:2};}
-    else{e1={x:3,y:12};e2={x:11,y:12};}
+    if(nextDir.x>0){e1={x:22,y:7};e2={x:22,y:20};}
+    else if(nextDir.x<0){e1={x:7,y:7};e2={x:7,y:20};}
+    else if(nextDir.y<0){e1={x:7,y:7};e2={x:20,y:7};}
+    else{e1={x:7,y:22};e2={x:20,y:22};}
     ctx.fillStyle="#fff";
-    ctx.beginPath();ctx.arc(h2.x+e1.x,h2.y+e1.y,2.5,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(h2.x+e2.x,h2.y+e2.y,2.5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h2.x+e1.x,h2.y+e1.y,4,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h2.x+e2.x,h2.y+e2.y,4,0,Math.PI*2);ctx.fill();
     ctx.fillStyle="#003311";
-    ctx.beginPath();ctx.arc(h2.x+e1.x+0.5,h2.y+e1.y+0.5,1.2,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(h2.x+e2.x+0.5,h2.y+e2.y+0.5,1.2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h2.x+e1.x+1,h2.y+e1.y+1,2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(h2.x+e2.x+1,h2.y+e2.y+1,2,0,Math.PI*2);ctx.fill();
   }
   // Mele con brillantezza
   apples.forEach(a=>{
-    ctx.shadowBlur=8;ctx.shadowColor="#ff3030";
-    ctx.fillStyle="#cc2020";ctx.beginPath();ctx.arc(a.x+9,a.y+10,8,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#ee4040";ctx.beginPath();ctx.arc(a.x+9,a.y+10,6,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,0.5)";ctx.beginPath();ctx.arc(a.x+6,a.y+7,2.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#2d6a10";ctx.fillRect(a.x+8,a.y+2,3,5);ctx.shadowBlur=0;
+    ctx.shadowBlur=10;ctx.shadowColor="#ff3030";
+    ctx.fillStyle="#cc2020";ctx.beginPath();ctx.arc(a.x+16,a.y+17,12,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#ee4040";ctx.beginPath();ctx.arc(a.x+16,a.y+17,9,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,0.5)";ctx.beginPath();ctx.arc(a.x+11,a.y+11,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#2d6a10";ctx.fillRect(a.x+14,a.y+2,4,7);ctx.shadowBlur=0;
   });
   // Veleno
   poisons.forEach(p=>{
     const pulse=0.8+Math.sin(Date.now()*0.005)*0.2;
     ctx.shadowBlur=10*pulse;ctx.shadowColor="#cc44ff";
-    ctx.fillStyle="#7b2fa8";ctx.beginPath();ctx.arc(p.x+9,p.y+9,8*pulse,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#aa44ee";ctx.beginPath();ctx.arc(p.x+9,p.y+9,5,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="bold 10px Arial";ctx.textAlign="center";
-    ctx.fillText("☠",p.x+9,p.y+13);ctx.textAlign="left";
+    ctx.fillStyle="#7b2fa8";ctx.beginPath();ctx.arc(p.x+16,p.y+16,12*pulse,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#aa44ee";ctx.beginPath();ctx.arc(p.x+16,p.y+16,7,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="bold 14px Arial";ctx.textAlign="center";
+    ctx.fillText("☠",p.x+16,p.y+21);ctx.textAlign="left";
   });
   // HUD in-game
   ctx.fillStyle="rgba(0,0,0,0.55)";ctx.fillRect(0,0,W,34);
@@ -635,7 +635,7 @@ function restart(){document.getElementById("gameover").style.display="none";coun
 // input
 document.addEventListener("keydown",e=>{
   keys[e.key]=true;
-  if(mode==="snake"){if(e.key==="ArrowUp"&&dy===0)nextDir={x:0,y:-20};if(e.key==="ArrowDown"&&dy===0)nextDir={x:0,y:20};if(e.key==="ArrowLeft"&&dx===0)nextDir={x:-20,y:0};if(e.key==="ArrowRight"&&dx===0)nextDir={x:20,y:0};}
+  if(mode==="snake"){if(e.key==="ArrowUp"&&dy===0)nextDir={x:0,y:-32};if(e.key==="ArrowDown"&&dy===0)nextDir={x:0,y:32};if(e.key==="ArrowLeft"&&dx===0)nextDir={x:-32,y:0};if(e.key==="ArrowRight"&&dx===0)nextDir={x:32,y:0};}
   if(mode==="dodge"){if(e.key==="ArrowUp"){dodgeDx=0;dodgeDy=-5;}if(e.key==="ArrowDown"){dodgeDx=0;dodgeDy=5;}if(e.key==="ArrowLeft"){dodgeDx=-5;dodgeDy=0;}if(e.key==="ArrowRight"){dodgeDx=5;dodgeDy=0;}}
   if(mode==="dino"&&(e.key==="ArrowUp"||e.key===" ")&&!jumping){dino.vy=-18;jumping=true;}
 });
